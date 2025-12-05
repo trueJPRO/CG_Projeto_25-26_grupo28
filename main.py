@@ -307,6 +307,19 @@ def build_scene_graph():
     fender_rr_node.draw_function = lambda: draw_wheel_fender(False)
     vehicle_node.add_child(fender_rr_node)
 
+    # Portas
+    car_door_left_node = Node("Door_Left")
+    car_door_left_node.set_position(-0.37, -0.3, -0.75)
+    car_door_left_node.set_color(0.8, 0.1, 0.1)
+    car_door_left_node.draw_function = draw_car_door
+    vehicle_node.add_child(car_door_left_node)
+
+    car_door_right_node = Node("Door_Right")
+    car_door_right_node.set_position(0.37, -0.3, -0.75)
+    car_door_right_node.set_color(0.8, 0.1, 0.1)
+    car_door_right_node.draw_function = draw_car_door
+    vehicle_node.add_child(car_door_right_node)
+
     # Rodas
     wheel_fl_node = Node("Wheel_FL")
     wheel_fl_node.set_position(-0.40, -0.75, -0.9)
@@ -344,19 +357,6 @@ def build_scene_graph():
     steering_wheel_node.set_color(1.0, 1.0, 1.0)
     steering_wheel_node.draw_function = draw_steering_wheel_rotating
     vehicle_node.add_child(steering_wheel_node)
-
-    # Portas
-    car_door_left_node = Node("Door_Left")
-    car_door_left_node.set_position(-0.37, -0.3, -0.75)
-    car_door_left_node.set_color(0.8, 0.1, 0.1)
-    car_door_left_node.draw_function = draw_car_door
-    vehicle_node.add_child(car_door_left_node)
-
-    car_door_right_node = Node("Door_Right")
-    car_door_right_node.set_position(0.37, -0.3, -0.75)
-    car_door_right_node.set_color(0.8, 0.1, 0.1)
-    car_door_right_node.draw_function = draw_car_door
-    vehicle_node.add_child(car_door_right_node)
 
     # Para-brisas
     windshield_node = Node("Windshield")
