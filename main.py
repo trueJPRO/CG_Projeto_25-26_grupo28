@@ -372,6 +372,11 @@ def build_scene_graph():
     walls.draw_function = draw_walls
     garage.add_child(walls)
 
+    gate = Node("Gate")
+    gate.set_position(0.0, -0.5, 0.0)
+    gate.draw_function = draw_gate
+    gate_pivot.add_child(gate)
+
     gate_transform = Node("Gate_Transform")
     gate_transform.set_position(0.0, -0.5, 1.51)
     garage.add_child(gate_transform)
@@ -379,11 +384,6 @@ def build_scene_graph():
     gate_pivot = Node("Gate_Pivot")
     gate_pivot.set_position(0.0, 1.0, 0.0)
     gate_transform.add_child(gate_pivot)
-
-    gate = Node("Gate")
-    gate.set_position(0.0, -0.5, 0.0)
-    gate.draw_function = draw_gate
-    gate_pivot.add_child(gate)
 
     # === casa ao lado da garagem === #
     house = Node("House")
