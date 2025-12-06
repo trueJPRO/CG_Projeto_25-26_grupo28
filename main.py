@@ -347,8 +347,8 @@ def build_scene_graph():
 
     # Volante
     steering_column_node = Node("Column")
-    steering_column_node.set_position(-0.15, 0.0, -0.5)
-    steering_column_node.set_color(1.0, 1.0, 1.0)
+    steering_column_node.set_position(-0.15, 0.01, -0.5)
+    steering_column_node.set_color(1.0, 0.0, 1.0)
     steering_column_node.draw_function = draw_steering_column
     vehicle_node.add_child(steering_column_node)
 
@@ -844,7 +844,7 @@ def draw_steering_column():
     glColor3f(0.1, 0.1, 0.1)
     glPushMatrix()
     glTranslatef(0, -0.15, -0.14)
-    glScalef(0.02, 0.15, 0.02)
+    glScalef(0.02, 0.16, 0.02)
     glutSolidCube(1.1)
     glPopMatrix()
 
@@ -852,7 +852,8 @@ def draw_steering_column():
 def draw_steering_wheel_rotating():
     glColor3f(0.05, 0.05, 0.05)
     glPushMatrix()
-    glutSolidSphere(0.02, 12, 12)
+    glTranslatef(0.0, 0.0, -0.01)
+    glutSolidSphere(0.03, 12, 12)
     glPopMatrix()
 
     glColor3f(0.15, 0.15, 0.15)
