@@ -796,16 +796,14 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
         glRotatef(180, 0, 0, 1)  # correção das jantes
 
     glDisable(GL_COLOR_MATERIAL)
-
     glPushMatrix()
     glRotatef(90, 0, 1, 0)
     apply_material(materials['borracha'])
     glutSolidTorus(radius * 0.2, radius * 0.8, 16, 24)
     glPopMatrix()
-
     glEnable(GL_COLOR_MATERIAL)
-    glDisable(GL_COLOR_MATERIAL)
 
+    glDisable(GL_COLOR_MATERIAL)
     glPushMatrix()
     glRotatef(90, 0, 1, 0)
     quad = gluNewQuadric()
@@ -820,7 +818,6 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
     gluDisk(quad, 0, radius * 0.7, 24, 1)
     gluDeleteQuadric(quad)
     glPopMatrix()
-
     glEnable(GL_COLOR_MATERIAL)
 
     glColor3f(0.5, 0.5, 0.55)
