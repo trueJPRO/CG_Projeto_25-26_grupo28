@@ -406,16 +406,16 @@ def build_scene_graph():
     house.add_child(house_door)
 
     # Janela da casa esquerda
-    house_window = Node("House_Window")
-    house_window.set_position(-1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
-    house_window.draw_function = draw_house_window
-    house.add_child(house_window)
+    house_windowL = Node("House_Window_L")
+    house_windowL.set_position(-1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
+    house_windowL.draw_function = draw_house_window
+    house.add_child(house_windowL)
 
     # Janela da casa direita
-    house_window = Node("House_Window")
-    house_window.set_position(1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
-    house_window.draw_function = draw_house_window
-    house.add_child(house_window)
+    house_windowR = Node("House_Window_R")
+    house_windowR.set_position(1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
+    house_windowR.draw_function = draw_house_window
+    house.add_child(house_windowR)
 
     # === Estrada com Postes === #
     road_node = Node("Road")
