@@ -290,35 +290,35 @@ def build_scene_graph():
     fender_fl_node = Node("Fender_FL")
     fender_fl_node.set_position(-0.41, -0.75, -0.9)
     fender_fl_node.draw_function = lambda: draw_wheel_fender(True)
-    body.add_child(fender_fl_node)
+    vehicle_node.add_child(fender_fl_node)
 
     fender_fr_node = Node("Fender_FR")
     fender_fr_node.set_position(0.41, -0.75, -0.9)
     fender_fr_node.draw_function = lambda: draw_wheel_fender(True)
-    body.add_child(fender_fr_node)
+    vehicle_node.add_child(fender_fr_node)
 
     fender_rl_node = Node("Fender_RL")
     fender_rl_node.set_position(-0.40, -0.65, 0.4)
     fender_rl_node.draw_function = lambda: draw_wheel_fender(False)
-    body.add_child(fender_rl_node)
+    vehicle_node.add_child(fender_rl_node)
 
     fender_rr_node = Node("Fender_RR")
     fender_rr_node.set_position(0.40, -0.65, 0.4)
     fender_rr_node.draw_function = lambda: draw_wheel_fender(False)
-    body.add_child(fender_rr_node)
+    vehicle_node.add_child(fender_rr_node)
 
     # Portas
     car_door_left_node = Node("Door_Left")
     car_door_left_node.set_position(-0.37, -0.3, -0.75)
     car_door_left_node.set_color(0.8, 0.1, 0.1)
     car_door_left_node.draw_function = draw_car_door
-    body.add_child(car_door_left_node)
+    vehicle_node.add_child(car_door_left_node)
 
     car_door_right_node = Node("Door_Right")
     car_door_right_node.set_position(0.37, -0.3, -0.75)
     car_door_right_node.set_color(0.8, 0.1, 0.1)
     car_door_right_node.draw_function = draw_car_door
-    body.add_child(car_door_right_node)
+    vehicle_node.add_child(car_door_right_node)
 
     # Rodas
     wheel_fl_node = Node("Wheel_FL")
@@ -356,13 +356,13 @@ def build_scene_graph():
     steering_wheel_node.set_position(-0.15, -0.05, -0.615)
     steering_wheel_node.set_color(1.0, 1.0, 1.0)
     steering_wheel_node.draw_function = draw_steering_wheel_rotating
-    Column.add_child(steering_wheel_node)
+    vehicle_node.add_child(steering_wheel_node)
 
     # Para-brisas
     windshield_node = Node("Windshield")
     windshield_node.set_position(0.0, -0.05, -0.6)
     windshield_node.draw_function = draw_windshield
-    body.add_child(windshield_node)
+    vehicle_node.add_child(windshield_node)
 
     # Garagem
     garage = Node("Garage")
