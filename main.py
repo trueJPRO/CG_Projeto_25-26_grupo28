@@ -631,7 +631,6 @@ def draw_gate():
     height = 2.5
 
     glPushMatrix()
-
     glBegin(GL_QUADS)
     glNormal3f(0, 0, -1)
     glTexCoord2f(0, 0)
@@ -643,8 +642,8 @@ def draw_gate():
     glTexCoord2f(0, 1)
     glVertex3f(-width / 2, height / 2, 0)
     glEnd()
-
     glPopMatrix()
+
     glDisable(GL_TEXTURE_2D)
     glEnable(GL_COLOR_MATERIAL)
     glDisable(GL_LIGHT1)
@@ -797,17 +796,18 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
         glRotatef(180, 0, 0, 1)  # correção das jantes
 
     glDisable(GL_COLOR_MATERIAL)
+
     glPushMatrix()
     glRotatef(90, 0, 1, 0)
     apply_material(materials['borracha'])
     glutSolidTorus(radius * 0.2, radius * 0.8, 16, 24)
     glPopMatrix()
-    glEnable(GL_COLOR_MATERIAL)
 
+    glEnable(GL_COLOR_MATERIAL)
     glDisable(GL_COLOR_MATERIAL)
+
     glPushMatrix()
     glRotatef(90, 0, 1, 0)
-
     quad = gluNewQuadric()
     apply_material(materials['metal'])
     gluQuadricNormals(quad, GLU_SMOOTH)
@@ -820,11 +820,13 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
     gluDisk(quad, 0, radius * 0.7, 24, 1)
     gluDeleteQuadric(quad)
     glPopMatrix()
+
     glEnable(GL_COLOR_MATERIAL)
 
     glColor3f(0.5, 0.5, 0.55)
     for i in range(5):
         angle = (360.0 / 5) * i
+
         glPushMatrix()
         glRotatef(90, 0, 1, 0)
 
@@ -842,6 +844,7 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
 
 def draw_steering_column():
     glColor3f(0.1, 0.1, 0.1)
+
     glPushMatrix()
     glTranslatef(0, -0.15, -0.14)
     glScalef(0.02, 0.16, 0.02)
@@ -851,12 +854,14 @@ def draw_steering_column():
 
 def draw_steering_wheel_rotating():
     glColor3f(0.05, 0.05, 0.05)
+
     glPushMatrix()
     glTranslatef(0.0, 0.0, -0.01)
     glutSolidSphere(0.03, 12, 12)
     glPopMatrix()
 
     glColor3f(0.15, 0.15, 0.15)
+
     glPushMatrix()
     glutSolidTorus(0.015, 0.11, 12, 24)
     glPopMatrix()
@@ -864,6 +869,7 @@ def draw_steering_wheel_rotating():
     glColor3f(0.2, 0.2, 0.2)
     for i in range(3):
         angle = (360.0 / 3) * i
+
         glPushMatrix()
         glRotatef(angle, 0, 0, 1)
         glTranslatef(0.05, 0, 0)
@@ -900,6 +906,7 @@ def draw_car_body():
 
     # === Base === #
     glDisable(GL_COLOR_MATERIAL)
+
     glPushMatrix()
     glScalef(0.80, 0.40, 1.60)
     glTranslatef(0.0, -0.3, 0.0)
@@ -976,15 +983,14 @@ def draw_car_body():
 
 def draw_car_door():
     glDisable(GL_COLOR_MATERIAL)
-    glPushMatrix()
 
+    glPushMatrix()
     glScalef(0.05, 0.35, 0.7)
     glTranslatef(0.0, -0.18, 0.6)
-
     apply_material(materials['vermelho_metálico'])
     glutSolidCube(1.0)
-
     glPopMatrix()
+
     glEnable(GL_COLOR_MATERIAL)
 
 
@@ -1026,6 +1032,7 @@ def draw_windshield():
 
 def draw_wheel_fender(front):
     glDisable(GL_COLOR_MATERIAL)
+
     glPushMatrix()
     apply_material(materials['vermelho_metálico'])
 
