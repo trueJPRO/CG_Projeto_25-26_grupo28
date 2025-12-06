@@ -434,13 +434,13 @@ def build_scene_graph():
         lamp_near = Node(f"Lamp_Near_{i}")
         lamp_near.set_position(x_pos + 3.0, -1.0, road_z_pos - 6)
         lamp_near.draw_function = draw_street_lamp
-        scene_root.add_child(lamp_near)
+        road_node.add_child(lamp_near)
 
         # Poste mais afastado do lado da casa
         lamp_far = Node(f"Lamp_Far_{i}")
         lamp_far.set_position(x_pos + 3.0, -1.0, road_z_pos)
         lamp_far.draw_function = draw_street_lamp
-        scene_root.add_child(lamp_far)
+        road_node.add_child(lamp_far)
 
 
 # ===== Desenho de Objetos ===== #
@@ -793,6 +793,9 @@ def draw_house_window():
 
 # === Carro === #
 def draw_wheel_detailed(radius, width, is_left_side=True):
+    if is_left_side:
+        glRotatef(180, 0, 0, 1)  # correção das jantes
+
     glDisable(GL_COLOR_MATERIAL)
     glPushMatrix()
     glRotatef(90, 0, 1, 0)
