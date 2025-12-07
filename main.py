@@ -1542,6 +1542,9 @@ def reshape(width, height):
     if height == 0:
         height = 1
 
+    window_width = width
+    window_height = height
+
     aspect = width / float(height)
 
     glViewport(0, 0, width, height)
