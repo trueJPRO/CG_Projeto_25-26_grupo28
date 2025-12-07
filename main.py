@@ -468,7 +468,7 @@ def draw_street_lamp():
     glutSolidSphere(raio, 16, 16)
     glPopMatrix()
 
-    # === Chapéu === #
+    # Chapéu
     glPushMatrix()
     glTranslatef(0.0, altura + raio, 0.0)
     glScalef(sizeChapeu, 0.02, sizeChapeu)
@@ -734,15 +734,15 @@ def draw_roof():
     glEnd()
 
     glBegin(GL_QUADS)
-    # Lado direito
-    glVertex3f(width / 2, 0.0, depth / 2)
-    glVertex3f(width / 2, 0.0, -depth / 2)
-    glVertex3f(0.0, height, -depth / 2)
-    glVertex3f(0.0, height, depth / 2)
-
     # Lado esquerdo
     glVertex3f(-width / 2, 0.0, depth / 2)
     glVertex3f(-width / 2, 0.0, -depth / 2)
+    glVertex3f(0.0, height, -depth / 2)
+    glVertex3f(0.0, height, depth / 2)
+
+    # Lado direito
+    glVertex3f(width / 2, 0.0, depth / 2)
+    glVertex3f(width / 2, 0.0, -depth / 2)
     glVertex3f(0.0, height, -depth / 2)
     glVertex3f(0.0, height, depth / 2)
     glEnd()
@@ -752,7 +752,7 @@ def draw_roof():
 
 def draw_house_door():
     glDisable(GL_COLOR_MATERIAL)
-    apply_material(materials['madeira'])  # MADEIRA
+    apply_material(materials['madeira'])
 
     width = 0.9
     height = 1.8
