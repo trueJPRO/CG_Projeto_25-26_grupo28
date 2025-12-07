@@ -810,10 +810,7 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
     apply_material(materials['metal'])
     gluQuadricNormals(quad, GLU_SMOOTH)
 
-    if is_left_side:
-        glTranslatef(0, 0, width * 0.1)
-    else:
-        glTranslatef(0, 0, width * -0.1)
+    glTranslatef(0, 0, width * 0.1)
 
     gluDisk(quad, 0, radius * 0.7, 24, 1)
     gluDeleteQuadric(quad)
@@ -826,10 +823,7 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
         glPushMatrix()
         glRotatef(90, 0, 1, 0)
 
-        if is_left_side:
-            glTranslatef(0, 0, width * 0.1)
-        else:
-            glTranslatef(0, 0, width * -0.1)
+        glTranslatef(0, 0, width * 0.1)
 
         glRotatef(angle, 0, 0, 1)
         glTranslatef(radius * 0.3, 0, 0)
