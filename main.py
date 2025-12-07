@@ -387,13 +387,13 @@ def build_scene_graph():
 
     # Portas
     car_door_left_node = Node("Door_Left")
-    car_door_left_node.set_position(-0.37, -0.3, -0.75)
+    car_door_left_node.set_position(-0.375, -0.3, -0.75)
     car_door_left_node.set_color(0.8, 0.1, 0.1)
     car_door_left_node.draw_function = draw_car_door
     vehicle_node.add_child(car_door_left_node)
 
     car_door_right_node = Node("Door_Right")
-    car_door_right_node.set_position(0.37, -0.3, -0.75)
+    car_door_right_node.set_position(0.375, -0.3, -0.75)
     car_door_right_node.set_color(0.8, 0.1, 0.1)
     car_door_right_node.draw_function = draw_car_door
     vehicle_node.add_child(car_door_right_node)
@@ -983,7 +983,7 @@ def draw_car_door():
 
     glPushMatrix()
     glScalef(0.05, 0.35, 0.7)
-    glTranslatef(0.0, -0.18, 0.6)
+    glTranslatef(0.0, -0.18, 0.54)
     apply_material(materials['vermelho_metálico'])
     glutSolidCube(1.0)
     glPopMatrix()
@@ -1389,7 +1389,7 @@ def animate_gate_close():
 def animate_car_door_left_open():
     global car_door_left_angle
     if car_door_left_angle > -70.0:
-        car_door_left_angle -= 1.0
+        car_door_left_angle -= 3.0
         car_door_left_node.set_rotation(car_door_left_angle, 0.0, 1.0, 0.0)
     glutPostRedisplay()
 
@@ -1397,7 +1397,7 @@ def animate_car_door_left_open():
 def animate_car_door_left_close():
     global car_door_left_angle
     if car_door_left_angle < 0.0:
-        car_door_left_angle += 1.0
+        car_door_left_angle += 3.0
         car_door_left_node.set_rotation(car_door_left_angle, 0.0, 1.0, 0.0)
     glutPostRedisplay()
 
@@ -1405,7 +1405,7 @@ def animate_car_door_left_close():
 def animate_car_door_right_open():
     global car_door_right_angle
     if car_door_right_angle < 70.0:
-        car_door_right_angle += 1.0
+        car_door_right_angle += 3.0
         car_door_right_node.set_rotation(car_door_right_angle, 0.0, 1.0, 0.0)
     glutPostRedisplay()
 
@@ -1413,7 +1413,7 @@ def animate_car_door_right_open():
 def animate_car_door_right_close():
     global car_door_right_angle
     if car_door_right_angle > 0.0:
-        car_door_right_angle -= 1.0
+        car_door_right_angle -= 3.0
         car_door_right_node.set_rotation(car_door_right_angle, 0.0, 1.0, 0.0)
     glutPostRedisplay()
 
