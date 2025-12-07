@@ -43,7 +43,7 @@ headlights_on = False
 keys_pressed = {'w': False, 's': False, 'a': False, 'd': False}
 
 car_half_width = 0.4
-car_half_length = 0.6
+car_half_length = 0.7
 car_offset_z = -0.3
 
 wheel_radius_front = 0.25
@@ -275,7 +275,85 @@ def build_scene_graph():
     ground.draw_function = draw_ground
     scene_root.add_child(ground)
 
-    # Carro
+    # Garagem
+    garage = Node("Garage")
+    scene_root.add_child(garage)
+
+    walls = Node("Walls")
+    walls.draw_function = draw_walls
+    garage.add_child(walls)
+
+    gate_transform = Node("Gate_Transform")
+    gate_transform.set_position(0.0, -0.5, 1.51)
+    garage.add_child(gate_transform)
+
+    gate_pivot = Node("Gate_Pivot")
+    gate_pivot.set_position(0.0, 1.0, 0.0)
+    gate_transform.add_child(gate_pivot)
+
+    gate = Node("Gate")
+    gate.set_position(0.0, -0.5, 0.0)
+    gate.draw_function = draw_gate
+    gate_pivot.add_child(gate)
+
+    # === casa ao lado da garagem === #
+    house = Node("House")
+    house.set_position(-4.0, 0.0, 0.0)  # para não tocar na garagem e ficar bugado
+    scene_root.add_child(house)
+
+    house_walls = Node("House_Walls")
+    house_walls.draw_function = draw_house_walls
+    house.add_child(house_walls)
+
+    roof = Node("House_Roof")
+    roof.set_position(0.0, 1.25, 0.0)
+    roof.draw_function = draw_roof
+    house.add_child(roof)
+
+    # Porta da casa
+    house_door = Node("House_Door")
+    house_door.set_position(0.0, -0.25, 1.96)  # para não tocar na casa e ficar bugado
+    house_door.draw_function = draw_house_door
+    house.add_child(house_door)
+
+    # Janela da casa esquerda
+    house_windowL = Node("House_Window_L")
+    house_windowL.set_position(-1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
+    house_windowL.draw_function = draw_house_window
+    house.add_child(house_windowL)
+
+    # Janela da casa direita
+    house_windowR = Node("House_Window_R")
+    house_windowR.set_position(1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
+    house_windowR.draw_function = draw_house_window
+    house.add_child(house_windowR)
+
+    # === Estrada com Postes === #
+    road_node = Node("Road")
+    road_node.draw_function = draw_road
+    scene_root.add_child(road_node)
+
+    road_z_pos = 8.0
+    lamp_spacing = 15.0
+    num_lamp_pairs = 1
+
+    # Postes em pares
+    for i in range(-num_lamp_pairs, num_lamp_pairs):
+        x_pos = i * lamp_spacing
+
+        # Poste mais próximo do lado da casa
+        lamp_near = Node(f"Lamp_Near_{i}")
+        lamp_near.set_position(x_pos + 3.0, -1.0, road_z_pos - 6)
+        lamp_near.draw_function = draw_street_lamp
+        road_node.add_child(lamp_near)
+
+        # Poste mais afastado do lado da casa
+        lamp_far = Node(f"Lamp_Far_{i}")
+        lamp_far.set_position(x_pos + 3.0, -1.0, road_z_pos)
+        lamp_far.draw_function = draw_street_lamp
+        road_node.add_child(lamp_far)
+
+    # Carro (deixem no fim obrigatoriamente devido ao para-brisas)
     vehicle_node = Node("Vehicle")
     vehicle_node.set_position(car_x, 0.0, car_z)
     scene_root.add_child(vehicle_node)
@@ -363,84 +441,6 @@ def build_scene_graph():
     windshield_node.set_position(0.0, -0.05, -0.6)
     windshield_node.draw_function = draw_windshield
     vehicle_node.add_child(windshield_node)
-
-    # Garagem
-    garage = Node("Garage")
-    scene_root.add_child(garage)
-
-    walls = Node("Walls")
-    walls.draw_function = draw_walls
-    garage.add_child(walls)
-
-    gate_transform = Node("Gate_Transform")
-    gate_transform.set_position(0.0, -0.5, 1.51)
-    garage.add_child(gate_transform)
-
-    gate_pivot = Node("Gate_Pivot")
-    gate_pivot.set_position(0.0, 1.0, 0.0)
-    gate_transform.add_child(gate_pivot)
-
-    gate = Node("Gate")
-    gate.set_position(0.0, -0.5, 0.0)
-    gate.draw_function = draw_gate
-    gate_pivot.add_child(gate)
-
-    # === casa ao lado da garagem === #
-    house = Node("House")
-    house.set_position(-4.0, 0.0, 0.0)  # para não tocar na garagem e ficar bugado
-    scene_root.add_child(house)
-
-    house_walls = Node("House_Walls")
-    house_walls.draw_function = draw_house_walls
-    house.add_child(house_walls)
-
-    roof = Node("House_Roof")
-    roof.set_position(0.0, 1.25, 0.0)
-    roof.draw_function = draw_roof
-    house.add_child(roof)
-
-    # Porta da casa
-    house_door = Node("House_Door")
-    house_door.set_position(0.0, -0.25, 1.96)  # para não tocar na casa e ficar bugado
-    house_door.draw_function = draw_house_door
-    house.add_child(house_door)
-
-    # Janela da casa esquerda
-    house_windowL = Node("House_Window_L")
-    house_windowL.set_position(-1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
-    house_windowL.draw_function = draw_house_window
-    house.add_child(house_windowL)
-
-    # Janela da casa direita
-    house_windowR = Node("House_Window_R")
-    house_windowR.set_position(1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
-    house_windowR.draw_function = draw_house_window
-    house.add_child(house_windowR)
-
-    # === Estrada com Postes === #
-    road_node = Node("Road")
-    road_node.draw_function = draw_road
-    scene_root.add_child(road_node)
-
-    road_z_pos = 8.0
-    lamp_spacing = 15.0
-    num_lamp_pairs = 1
-
-    # Postes em pares
-    for i in range(-num_lamp_pairs, num_lamp_pairs):
-        x_pos = i * lamp_spacing
-
-        # Poste mais próximo do lado da casa
-        lamp_near = Node(f"Lamp_Near_{i}")
-        lamp_near.set_position(x_pos + 3.0, -1.0, road_z_pos - 6)
-        lamp_near.draw_function = draw_street_lamp
-        road_node.add_child(lamp_near)
-
-        # Poste mais afastado do lado da casa
-        lamp_far = Node(f"Lamp_Far_{i}")
-        lamp_far.set_position(x_pos + 3.0, -1.0, road_z_pos)
-        lamp_far.draw_function = draw_street_lamp
-        road_node.add_child(lamp_far)
 
 
 # ===== Desenho de Objetos ===== #
@@ -588,6 +588,12 @@ def draw_walls():
     garage_height = 2.5
     garage_depth = 4.0
 
+    # Parede Trás
+    glPushMatrix()
+    glTranslatef(0, 0, -garage_depth / 2 + wall_thickness / 2)  # Ajuste para fechar cantos
+    draw_solid_wall(garage_width + wall_thickness, garage_height, wall_thickness, wall_texture)
+    glPopMatrix()
+
     # Parede Esquerda
     glPushMatrix()
     glTranslatef(-garage_width / 2, 0, 0)
@@ -598,12 +604,6 @@ def draw_walls():
     glPushMatrix()
     glTranslatef(garage_width / 2, 0, 0)
     draw_solid_wall(wall_thickness, garage_height, garage_depth, wall_texture)
-    glPopMatrix()
-
-    # Parede Trás
-    glPushMatrix()
-    glTranslatef(0, 0, -garage_depth / 2 + wall_thickness / 2)  # Ajuste para fechar cantos
-    draw_solid_wall(garage_width + wall_thickness, garage_height, wall_thickness, wall_texture)
     glPopMatrix()
 
     # Teto
@@ -820,7 +820,6 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
     glPopMatrix()
     glEnable(GL_COLOR_MATERIAL)
 
-    glColor3f(0.5, 0.5, 0.55)
     for i in range(5):
         angle = (360.0 / 5) * i
 
@@ -834,6 +833,7 @@ def draw_wheel_detailed(radius, width, is_left_side=True):
 
         glRotatef(angle, 0, 0, 1)
         glTranslatef(radius * 0.3, 0, 0)
+        apply_material(materials['metal'])
         glScalef(radius * 0.05, radius * 0.05, 0.02)
         glutSolidCube(1.0)
         glPopMatrix()
@@ -845,7 +845,7 @@ def draw_steering_column():
     glPushMatrix()
     glTranslatef(0, -0.15, -0.14)
     glScalef(0.02, 0.16, 0.02)
-    glutSolidCube(1.1)
+    glutSolidCube(1.3)
     glPopMatrix()
 
 
