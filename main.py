@@ -1191,7 +1191,7 @@ def update_camera():
 
 
 # ===== Físicas e Colisões ===== #
-def collides_with_buildings(x, z):
+def collides_with_objects(x, z):
     # === Hitbox do carro === #
     car_diagonal = math.sqrt(car_half_width ** 2 + car_half_length ** 2)
     car_collision_radius = car_diagonal
@@ -1315,7 +1315,7 @@ def update_physics(dt):
         else:
             cam_fps_look_offset += max_look_change if look_diff > 0.0 else -max_look_change
 
-    car_speed *= (1.0 - min(0.9, 0.5 * dt))
+    car_speed *= (1.0 - 0.5 * dt)
 
     if abs(car_steer) > 0.1 and abs(car_speed) > 0.01:
         turn_rate = car_steer * 0.5
@@ -1334,7 +1334,7 @@ def update_physics(dt):
             car_speed = 0.0
 
         # colisões com casa + garagem + postes
-        elif collides_with_buildings(new_x, new_z):
+        elif collides_with_objects(new_x, new_z):
             # bateu em algo → travar o carro
             car_speed = 0.0
         else:
