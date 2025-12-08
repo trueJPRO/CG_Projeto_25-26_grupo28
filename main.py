@@ -16,7 +16,8 @@ import time
 from PIL import Image
 
 # ===== Variáveis Globais ===== #
-scene_root = None
+# Nós do grafo de cena
+root_node = None
 vehicle_node = None
 wheel_fl_node = None
 wheel_fr_node = None
@@ -26,9 +27,8 @@ steering_column_node = None
 steering_wheel_node = None
 car_door_left_node = None
 car_door_right_node = None
-gate_pivot = None
-gate_transform = None
-is_night_mode = False
+gate_pivot_node = None
+gate_transform_node = None
 
 # Carro
 car_x = 0.0
@@ -40,43 +40,42 @@ car_steer_target = 0.0
 is_braking = False
 headlights_on = False
 
-keys_pressed = {'w': False, 's': False, 'a': False, 'd': False}
-
+# Colisões (Carro)
 car_half_width = 0.4
 car_half_length = 0.7
 car_offset_z = -0.3
 
+# Rodas (Carro)
 wheel_radius_front = 0.25
 wheel_radius_rear = 0.35
 wheel_width = 0.12
-
 wheel_rotation_front = 0.0
 wheel_rotation_rear = 0.0
 
-# Garagem
-gate_angle = 0.0
-gate_open = False
-
-# Portas do carro
+# Portas (Carro)
 car_door_left_angle = 0.0
 car_door_right_angle = 0.0
 car_door_left_open = False
 car_door_right_open = False
 
-# CÂMARA
-camera_mode = 0  # 0: orbitar, 1: primeira pessoa, 2: livre/espetador
+# Garagem
+gate_angle = 0.0
+gate_open = False
 
-# ORBITAR
+# Câmara
+camera_mode = 0
+
+# Orbitar (Câmara)
 cam_orbit_yaw = 10.0
-cam_orbit_pitch = 10.0  # Olhar por trás
+cam_orbit_pitch = 10.0
 cam_orbit_distance = 5.0
 cam_orbit_free_look = False
 
-# PRIMEIRA PESSOA
+# Primeira Pessoa (Câmara)
 cam_fps_look_offset = -180.0
-cam_fps_look_target = -180.0  # Para os botões de olhar
+cam_fps_look_target = -180.0
 
-# ESPETADOR
+# Espetador (Câmara)
 cam_free_x = 0.0
 cam_free_y = 5.0
 cam_free_z = 10.0
@@ -84,25 +83,28 @@ cam_free_yaw = -180.0
 cam_free_pitch = -20.0
 cam_free_move_speed = 0.5
 
+# FOV (Câmara)
 DEFAULT_FOV = 60.0
 current_fov = DEFAULT_FOV
 cam_orbit_fov = DEFAULT_FOV
 cam_free_fov = DEFAULT_FOV
 
-window_width = 1200  # Tamanho janela
+# Janela
+window_width = 1200
 window_height = 800
 
+# Mouse
 mouse_last_x = 500
 mouse_last_y = 200
 mouse_sensitivity = 0.2
 
-last_time = None
+# Texturas
 gate_texture = None
 wall_texture = None
 grass1_texture = None
 grass2_texture = None
 
-# === Materiais Globais === #
+# Materiais
 materials = {
     'vermelho_metálico': {
         'ambient': [0.3, 0.05, 0.05, 1.0],
@@ -188,6 +190,11 @@ materials = {
     }
 }
 
+# Outras
+keys_pressed = {'w': False, 's': False, 'a': False, 'd': False}
+last_time = None
+is_night_mode_node = False
+
 
 # ===== Grafo de Cena ===== #
 class Node:
@@ -261,45 +268,44 @@ class Node:
 
 
 def build_scene_graph():
-    global scene_root, vehicle_node
+    global root_node, vehicle_node
     global wheel_fl_node, wheel_fr_node, wheel_rl_node, wheel_rr_node
     global steering_column_node, steering_wheel_node
     global car_door_left_node, car_door_right_node
-    global gate_pivot, gate_transform
+    global gate_pivot_node, gate_transform_node
 
-    scene_root = Node("ROOT")
+    root_node = Node("ROOT")
 
     # Chão
     ground = Node("Ground")
     ground.set_color(1.0, 1.0, 1.0)
     ground.draw_function = draw_ground
-    scene_root.add_child(ground)
+    root_node.add_child(ground)
 
     # Garagem
     garage = Node("Garage")
-    scene_root.add_child(garage)
+    root_node.add_child(garage)
 
     walls = Node("Walls")
     walls.draw_function = draw_walls
     garage.add_child(walls)
 
-    gate_transform = Node("Gate_Transform")
-    gate_transform.set_position(0.0, -0.5, 1.51)
-    garage.add_child(gate_transform)
+    gate_transform_node = Node("Gate_Transform")
+    gate_transform_node.set_position(0.0, -0.5, 1.51)
+    garage.add_child(gate_transform_node)
 
-    gate_pivot = Node("Gate_Pivot")
-    gate_pivot.set_position(0.0, 1.0, 0.0)
-    gate_transform.add_child(gate_pivot)
+    gate_pivot_node = Node("Gate_Pivot")
+    gate_pivot_node.set_position(0.0, 1.0, 0.0)
+    gate_transform_node.add_child(gate_pivot_node)
 
     gate = Node("Gate")
     gate.set_position(0.0, -0.5, 0.0)
     gate.draw_function = draw_gate
-    gate_pivot.add_child(gate)
+    gate_pivot_node.add_child(gate)
 
-    # === casa ao lado da garagem === #
     house = Node("House")
     house.set_position(-4.0, 0.0, 0.0)  # para não tocar na garagem e ficar bugado
-    scene_root.add_child(house)
+    root_node.add_child(house)
 
     house_walls = Node("House_Walls")
     house_walls.draw_function = draw_house_walls
@@ -310,34 +316,30 @@ def build_scene_graph():
     roof.draw_function = draw_roof
     house.add_child(roof)
 
-    # Porta da casa
     house_door = Node("House_Door")
     house_door.set_position(0.0, -0.25, 1.96)  # para não tocar na casa e ficar bugado
     house_door.draw_function = draw_house_door
     house.add_child(house_door)
 
-    # Janela da casa esquerda
     house_windowL = Node("House_Window_L")
     house_windowL.set_position(-1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
     house_windowL.draw_function = draw_house_window
     house.add_child(house_windowL)
 
-    # Janela da casa direita
     house_windowR = Node("House_Window_R")
     house_windowR.set_position(1.25, 0.3, 1.96)  # para não tocar na casa e ficar bugado
     house_windowR.draw_function = draw_house_window
     house.add_child(house_windowR)
 
-    # === Estrada com Postes === #
     road_node = Node("Road")
     road_node.draw_function = draw_road
-    scene_root.add_child(road_node)
+    root_node.add_child(road_node)
 
     road_z_pos = 8.0
     lamp_spacing = 15.0
     num_lamp_pairs = 1
 
-    # Postes em pares
+    # Postes em pares na estrada
     for i in range(-num_lamp_pairs, num_lamp_pairs):
         x_pos = i * lamp_spacing
 
@@ -356,7 +358,7 @@ def build_scene_graph():
     # Carro (deixem no fim obrigatoriamente devido ao para-brisas)
     vehicle_node = Node("Vehicle")
     vehicle_node.set_position(car_x, 0.0, car_z)
-    scene_root.add_child(vehicle_node)
+    root_node.add_child(vehicle_node)
 
     body = Node("Body")
     body.set_position(0.0, -0.3, -0.3)
@@ -443,8 +445,8 @@ def build_scene_graph():
     vehicle_node.add_child(windshield_node)
 
 
-# ===== Desenho de Objetos ===== #
-# === Candeeiro === #
+# ===== Desenhos ===== #
+# Candeeiro
 def draw_street_lamp():
     altura = 3.0
     grossura = 0.1
@@ -479,7 +481,7 @@ def draw_street_lamp():
     glEnable(GL_COLOR_MATERIAL)
 
 
-# === Estrada === #
+# Estrada
 def draw_road():
     glDisable(GL_COLOR_MATERIAL)
     apply_material(materials['asfalto'])
@@ -501,7 +503,7 @@ def draw_road():
     glEnable(GL_COLOR_MATERIAL)
 
 
-# === Garagem === #
+# Garagem
 def draw_solid_wall(width, height, depth, texture):
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, texture)
@@ -649,7 +651,7 @@ def draw_gate():
     glDisable(GL_LIGHT1)
 
 
-# === Casa === #
+# Casa
 def draw_house_walls():
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, wall_texture)
@@ -790,7 +792,7 @@ def draw_house_window():
     glEnable(GL_COLOR_MATERIAL)
 
 
-# === Carro === #
+# Carro
 def draw_wheel_detailed(radius, width, is_left_side=True):
     if is_left_side:
         glRotatef(180, 0, 0, 1)  # correção das jantes
@@ -1054,7 +1056,7 @@ def draw_wheel_fender(front):
     glEnable(GL_COLOR_MATERIAL)
 
 
-# === Chão === #
+# Solo
 def draw_ground():
     global grass1_texture, grass2_texture
 
@@ -1362,63 +1364,37 @@ def update_physics(dt):
 # ===== Animações ===== #
 def animate_gate():
     global gate_angle
-    if gate_angle < 90.0:
-        gate_angle += 0.5
-        gate_pivot.set_rotation(-gate_angle, 1.0, 0.0, 0.0)
-        slide = (gate_angle / 90.0) * 1.5
-        gate_transform.set_position(0.0, -0.5, 1.51 - slide)
-    glutPostRedisplay()
+    if gate_angle < 90.0 and gate_open:
+        gate_angle += 1.0
+    elif gate_angle > 0.0 and not gate_open:
+        gate_angle -= 1.0
+    gate_pivot_node.set_rotation(-gate_angle, 1.0, 0.0, 0.0)
+    slide = (gate_angle / 90.0) * 1.5
+    gate_transform_node.set_position(0.0, -0.5, 1.51 - slide)
 
 
-def animate_gate_close():
-    global gate_angle
-    if gate_angle > 0.0:
-        gate_angle -= 0.5
-        gate_pivot.set_rotation(-gate_angle, 1.0, 0.0, 0.0)
-        slide = (gate_angle / 90.0) * 1.5
-        gate_transform.set_position(0.0, -0.5, 1.51 - slide)
-    glutPostRedisplay()
-
-
-def animate_car_door_left_open():
+def animate_car_door_left():
     global car_door_left_angle
-    if car_door_left_angle > -70.0:
+    if car_door_left_angle > -70.0 and car_door_left_open:
         car_door_left_angle -= 3.0
-        car_door_left_node.set_rotation(car_door_left_angle, 0.0, 1.0, 0.0)
-    glutPostRedisplay()
-
-
-def animate_car_door_left_close():
-    global car_door_left_angle
-    if car_door_left_angle < 0.0:
+    elif car_door_left_angle < 0.0 and not car_door_left_open:
         car_door_left_angle += 3.0
-        car_door_left_node.set_rotation(car_door_left_angle, 0.0, 1.0, 0.0)
-    glutPostRedisplay()
+    car_door_left_node.set_rotation(car_door_left_angle, 0.0, 1.0, 0.0)
 
 
-def animate_car_door_right_open():
+def animate_car_door_right():
     global car_door_right_angle
-    if car_door_right_angle < 70.0:
+    if car_door_right_angle < 70.0 and car_door_right_open:
         car_door_right_angle += 3.0
-        car_door_right_node.set_rotation(car_door_right_angle, 0.0, 1.0, 0.0)
-    glutPostRedisplay()
-
-
-def animate_car_door_right_close():
-    global car_door_right_angle
-    if car_door_right_angle > 0.0:
+    elif car_door_right_angle > 0.0 and not car_door_right_open:
         car_door_right_angle -= 3.0
-        car_door_right_node.set_rotation(car_door_right_angle, 0.0, 1.0, 0.0)
-    glutPostRedisplay()
+    car_door_right_node.set_rotation(car_door_right_angle, 0.0, 1.0, 0.0)
 
 
 def update_lighting_state():
-    global is_night_mode
-
-    if is_night_mode:
+    if is_night_mode_node:
         # === Noite === #
         glClearColor(0.05, 0.05, 0.1, 1.0)
-
         glDisable(GL_LIGHT0)
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.1, 0.1, 0.1, 1.0])
 
@@ -1426,11 +1402,10 @@ def update_lighting_state():
         # === Dia === #
         glClearColor(0.6, 0.8, 1.0, 1.0)
         glEnable(GL_LIGHT0)
-
         glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.2, 0.2, 0.2, 1.0])
 
 
-# FUNÇÕES-BASE #
+# ===== Atualização ===== #
 def idle():
     global last_time
 
@@ -1448,88 +1423,14 @@ def idle():
     update_physics(dt)
 
     # Animações
-    if gate_open and gate_angle < 90.0:
-        animate_gate()
-    elif not gate_open and gate_angle > 0.0:
-        animate_gate_close()
-
-    if car_door_left_open and car_door_left_angle > -70.0:
-        animate_car_door_left_open()
-    elif not car_door_left_open and car_door_left_angle < 0.0:
-        animate_car_door_left_close()
-
-    if car_door_right_open and car_door_right_angle < 70.0:
-        animate_car_door_right_open()
-    elif not car_door_right_open and car_door_right_angle > 0.0:
-        animate_car_door_right_close()
+    animate_gate()
+    animate_car_door_left()
+    animate_car_door_right()
 
     glutPostRedisplay()
 
 
-# ===== Inicialização ===== #
-def init():
-    global gate_texture, wall_texture, grass1_texture, grass2_texture
-
-    glClearColor(0.6, 0.8, 1.0, 1.0)
-    glEnable(GL_DEPTH_TEST)
-    glEnable(GL_NORMALIZE)
-    glEnable(GL_LIGHTING)
-    glEnable(GL_LIGHT0)
-    glEnable(GL_COLOR_MATERIAL)
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
-
-    # LIGHT 0 → Sol
-    light0_ambient = [0.25, 0.22, 0.18, 1.0]
-    light0_diffuse = [1.0, 0.95, 0.80, 1.0]
-    light0_specular = [1.0, 1.0, 1.0, 1.0]
-    light0_position = [5.0, 10.0, 10.0, 0.0]
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient)
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse)
-    glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular)
-    glLightfv(GL_LIGHT0, GL_POSITION, light0_position)
-
-    # LIGHT 1 → Lâmpada garagem (pontual, fria/azulada)
-    light1_ambient = [0.05, 0.06, 0.08, 1.0]
-    light1_diffuse = [0.05, 0.05, 1.0, 1.0]
-    light1_specular = [0.6, 0.7, 0.7, 1.0]
-    light1_position = [0.0, 1.0, 0.0, 1.0]
-    glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient)
-    glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse)
-    glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular)
-    glLightfv(GL_LIGHT1, GL_POSITION, light1_position)
-
-    # Atenuação
-    glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.0)
-    glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05)
-    glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01)
-
-    glMatrixMode(GL_PROJECTION)
-    gluPerspective(DEFAULT_FOV, 1.0, 0.1, 500.0)
-    glMatrixMode(GL_MODELVIEW)
-
-    gate_texture = load_texture("wood.jpg")
-    wall_texture = load_texture("brick.jpg")
-    grass1_texture = load_texture("grass1.jpg")
-    grass2_texture = load_texture("grass2.jpg")
-
-    # Farol Esquerdo
-    glEnable(GL_LIGHT2)
-    glLightfv(GL_LIGHT2, GL_DIFFUSE, [1.0, 1.0, 0.9, 1.0])
-    glLightfv(GL_LIGHT2, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
-    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 25.0)  # Ângulo
-    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2.0)  # Foco
-
-    # Farol Direito
-    glEnable(GL_LIGHT3)
-    glLightfv(GL_LIGHT3, GL_DIFFUSE, [1.0, 1.0, 0.9, 1.0])
-    glLightfv(GL_LIGHT3, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
-    glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 25.0)  # Ângulo
-    glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 2.0)  # Foco
-
-    update_lighting_state()
-    build_scene_graph()
-
-
+# ===== Renderização ===== #
 def reshape(width, height):
     global window_width, window_height
 
@@ -1568,15 +1469,15 @@ def display():
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
     update_camera()
-    scene_root.draw()
+    root_node.draw()
     glutSwapBuffers()
 
 
-# ===== Input ===== #
+# ===== Inputs ===== #
 def keyboard(key, x, y):
-    global camera_mode, gate_open
+    global camera_mode, gate_open, is_night_mode_node, headlights_on
     global car_door_left_open, car_door_right_open
-    global is_night_mode
+    global cam_orbit_pitch, cam_orbit_free_look
 
     if key in (b'w', b'W'):
         keys_pressed['w'] = True
@@ -1589,38 +1490,27 @@ def keyboard(key, x, y):
 
     elif key in (b'c', b'C'):
         camera_mode = (camera_mode + 1) % 3
-
         if camera_mode == 0:
-            global cam_orbit_pitch
             cam_orbit_pitch = max(-10.0, min(90.0, cam_orbit_pitch))
-            cam_orbit_fov = DEFAULT_FOV
         elif camera_mode == 2:
             cam_free_fov = DEFAULT_FOV
 
     elif key in (b'o', b'O'):
-        if camera_mode == 0:
-            global cam_orbit_free_look
-            cam_orbit_free_look = not cam_orbit_free_look
-        glutPostRedisplay()
+        if camera_mode == 0:            cam_orbit_free_look = not cam_orbit_free_look
 
     elif key == b'g' or key == b'G':
         gate_open = not gate_open
-
     elif key in (b'z', b'Z'):
         car_door_left_open = not car_door_left_open
-
     elif key in (b'x', b'X'):
         car_door_right_open = not car_door_right_open
 
     elif key in (b'm', b'M'):
-        is_night_mode = not is_night_mode
+        is_night_mode_node = not is_night_mode_node
         update_lighting_state()
-        glutPostRedisplay()
 
     elif key in (b'e', b'E'):
-        global headlights_on
         headlights_on = not headlights_on
-        glutPostRedisplay()
 
     elif key == b'\x1b' or key == b'q' or key == b'Q':
         try:
@@ -1702,7 +1592,6 @@ def mouse_motion(x, y):
 def mouse_button(button, state, x, y):
     global mouse_last_x, mouse_last_y
     global cam_orbit_distance
-    global cam_fps_look_target
     global cam_free_fov
 
     if state == GLUT_DOWN:
@@ -1713,38 +1602,81 @@ def mouse_button(button, state, x, y):
         # ORBITAR
         if button == 3:  # Scroll up
             cam_orbit_distance = max(2.0, cam_orbit_distance - 0.5)
-            glutPostRedisplay()
         elif button == 4:  # Scroll down
             cam_orbit_distance = min(20.0, cam_orbit_distance + 0.5)
-            glutPostRedisplay()
-
-    elif camera_mode == 1:
-        # PRIMEIRA PESSOA
-        if button == GLUT_LEFT_BUTTON:
-            if state == GLUT_DOWN:
-                cam_fps_look_target = -150.0  # Olha para a esquerda
-            else:
-                cam_fps_look_target = -180.0  # Volta ao centro
-            glutPostRedisplay()
-
-        elif button == GLUT_RIGHT_BUTTON:
-            if state == GLUT_DOWN:
-                cam_fps_look_target = -210.0  # Olha para a direita
-            else:
-                cam_fps_look_target = -180.0  # Volta ao centro
-            glutPostRedisplay()
 
     elif camera_mode == 2:
         # ESPETADOR
         if button == 3:  # Scroll up
             cam_free_fov = max(30.0, cam_free_fov - 2.0)
-            glutPostRedisplay()
         elif button == 4:  # Scroll down
             cam_free_fov = min(80.0, cam_free_fov + 2.0)
-            glutPostRedisplay()
+    glutPostRedisplay()
 
 
 # ===== Main ===== #
+def init():
+    global gate_texture, wall_texture, grass1_texture, grass2_texture
+
+    glClearColor(0.6, 0.8, 1.0, 1.0)
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_NORMALIZE)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    glEnable(GL_COLOR_MATERIAL)
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
+
+    # LIGHT 0 → Sol
+    light0_ambient = [0.25, 0.22, 0.18, 1.0]
+    light0_diffuse = [1.0, 0.95, 0.80, 1.0]
+    light0_specular = [1.0, 1.0, 1.0, 1.0]
+    light0_position = [5.0, 10.0, 10.0, 0.0]
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient)
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light0_diffuse)
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular)
+    glLightfv(GL_LIGHT0, GL_POSITION, light0_position)
+
+    # LIGHT 1 → Lâmpada garagem (pontual, fria/azulada)
+    light1_ambient = [0.05, 0.06, 0.08, 1.0]
+    light1_diffuse = [0.05, 0.05, 1.0, 1.0]
+    light1_specular = [0.6, 0.7, 0.7, 1.0]
+    light1_position = [0.0, 1.0, 0.0, 1.0]
+    glLightfv(GL_LIGHT1, GL_AMBIENT, light1_ambient)
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, light1_diffuse)
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular)
+    glLightfv(GL_LIGHT1, GL_POSITION, light1_position)
+
+    # Atenuação
+    glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION, 1.0)
+    glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 0.05)
+    glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01)
+
+    glMatrixMode(GL_PROJECTION)
+    gluPerspective(DEFAULT_FOV, 1.0, 0.1, 500.0)
+    glMatrixMode(GL_MODELVIEW)
+
+    gate_texture = load_texture("wood.jpg")
+    wall_texture = load_texture("brick.jpg")
+    grass1_texture = load_texture("grass1.jpg")
+    grass2_texture = load_texture("grass2.jpg")
+
+    # Farol Esquerdo
+    glEnable(GL_LIGHT2)
+    glLightfv(GL_LIGHT2, GL_DIFFUSE, [1.0, 1.0, 0.9, 1.0])
+    glLightfv(GL_LIGHT2, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
+    glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 25.0)  # Ângulo
+    glLightf(GL_LIGHT2, GL_SPOT_EXPONENT, 2.0)  # Foco
+
+    # Farol Direito
+    glEnable(GL_LIGHT3)
+    glLightfv(GL_LIGHT3, GL_DIFFUSE, [1.0, 1.0, 0.9, 1.0])
+    glLightfv(GL_LIGHT3, GL_SPECULAR, [1.0, 1.0, 1.0, 1.0])
+    glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, 25.0)  # Ângulo
+    glLightf(GL_LIGHT3, GL_SPOT_EXPONENT, 2.0)  # Foco
+
+    build_scene_graph()
+
+
 def main():
     glutInit(sys.argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH)
